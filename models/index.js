@@ -1,5 +1,5 @@
 
-const { Sequelize } = require('sequelize');
+const { Sequelize,DataTypes,Model } = require('sequelize');
 
 const sequelize = new Sequelize('test_employees', 'root', '', {
     host: 'localhost',
@@ -14,4 +14,12 @@ catch (error) {
     console.error('Unable to connect to the database:', error);
 }
 
-module.exports=sequelize;
+const db={};
+db.Sequelize=Sequelize;
+db.sequelize=sequelize;
+
+db.employee=require('./Employee')(sequelize,DataTypes,Model)
+db.employee_address=require('./EmployeeAddress')(sequelize,DataTypes)
+db.sequelize.sync({force:true})
+
+module.exports=db;
