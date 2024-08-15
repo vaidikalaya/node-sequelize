@@ -1,27 +1,51 @@
 const db=require('../models')
 const Employee=db.employee;
 
+const getEmployees = async (req,res) => {
+    const resEmp=await Employee.findAll({});
+    res.status(200).json(resEmp)
+}
+
+const getEmployee = async (req,res) => {
+    const resEmp=await Employee.findOne({
+        where:{id:req.params.id}
+    });
+    res.status(200).json(resEmp)
+}
+
 const addEmployee = async (req,res) => {
-    const resEmp=Employee.build({
-        first_name:'Prabhakar',
-        last_name:'Mishra',
-        email:'prabhakar@gmail.com',
-        salary:20000
-    });
-    await resEmp.save();
-    const data=resEmp.toJSON();
-    res.status(200).json(data)
+    const data=req.body;
+    if(data.length>1){
+        var resEmp=await Employee.bulkCreate(req.body);
+    }
+    else{
+        var resEmp=await Employee.create(req.body);
+    }
+    
+    res.status(200).json(resEmp)
 }
 
-const addEmployee2 = async (req,res) => {
-    const resEmp=await Employee.create({
-        first_name:'Viraj',
-        last_name:'Mishra',
-        email:'viraj@gmail.com',
-        salary:20000
+const updateEmployee = async (req,res) => {
+    const data=req.body;
+
+    const resEmp=await Employee.update(data,{
+        where:{id:req.params.id}
     });
-    const data=resEmp.toJSON();
-    res.status(200).json(data)
+    
+    res.status(200).json(resEmp)
 }
 
-module.exports={addEmployee,addEmployee2}
+const deleteEmployee = async (req,res) => {
+    const resEmp=await Employee.destroy({
+        where:{id:req.params.id}
+    });
+    res.status(200).json(resEmp)
+}
+
+module.exports={
+    getEmployees,
+    getEmployee,
+    addEmployee,
+    updateEmployee,
+    deleteEmployee
+}
