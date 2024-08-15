@@ -19,4 +19,5 @@ module.exports = (sequelize,DataTypes,Model) => {
       updatedAt: 'updated_at',
     },
   )
+  return Employee;
 }
