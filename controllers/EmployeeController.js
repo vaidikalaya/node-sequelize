@@ -8,10 +8,19 @@ const getEmployees = async (req,res) => {
 }
 
 const addEmployee = async (req,res) => {
-    const resEmp=await Employee.create(req.body);
-    res.status(200).json(resEmp)
+    var resEmp='';
+    var messages={};
+    try{
+        resEmp=await Employee.create(req.body)
+    }
+    catch(e){
+        let errorMessages={'isAlpha':'Only alphabets are allowed','isEmail':'Invalid Email'}
+        e.errors.forEach(error=>{
+            messages[error.path]=errorMessages[error.validatorKey];
+        })  
+    }
+    res.status(200).json({data:resEmp,messages:messages});
 }
-
 
 module.exports={
     getEmployees,
