@@ -5,7 +5,23 @@ const Address=db.employee_address;
 
 const getEmployees = async (req,res) => {
     const resEmp=await Employee.findAll({
-        include: Address,
+        include: {
+            model:Address,
+            as:"addresses",
+        },
+    });
+    res.status(200).json(resEmp)
+}
+
+//add attributes
+const getEmployees2 = async (req,res) => {
+    const resEmp=await Employee.findAll({
+        attributes:['id','first_name'],
+        include: {
+            model:Address,
+            as:"addresses",
+            attributes:['state','district']
+        },
     });
     res.status(200).json(resEmp)
 }
@@ -17,19 +33,8 @@ const getAddress = async (req,res) => {
     res.status(200).json(resEmp)
 }
 
-/*With Alias
-const getAddress = async (req,res) => {
-    const resEmp=await Address.findAll({
-        include: {
-            model:Employee,
-            as:"employee"
-        },
-    });
-    res.status(200).json(resEmp)
-}
-*/
-
 module.exports={
     getEmployees,
+    getEmployees2,
     getAddress
 }
