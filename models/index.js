@@ -22,9 +22,7 @@ db.sequelize=sequelize;
 db.employee=require('./Employee')(sequelize,DataTypes,Model)
 db.employee_address=require('./EmployeeAddress')(sequelize,DataTypes)
 
-db.employee.hasOne(db.employee_address,{foreignKey: 'employee_id'})
+db.employee.hasMany(db.employee_address,{foreignKey: 'employee_id',as:'addresses'})
 db.employee_address.belongsTo(db.employee,{foreignKey: 'employee_id'})
-//with alias
-//db.employee_address.belongsTo(db.employee,{foreignKey: 'employee_id',as:'employee'})
 
 module.exports=db;

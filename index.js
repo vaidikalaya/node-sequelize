@@ -11,6 +11,7 @@ app.get('/',function(req,res){
 })
 
 app.get('/employees',empCtrl.getEmployees)
+app.get('/employees2',empCtrl.getEmployees2)
 app.get('/addresses',empCtrl.getAddress)
 
 app.listen(3000,()=>{
