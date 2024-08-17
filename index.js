@@ -11,8 +11,7 @@ app.get('/',function(req,res){
 })
 
 app.get('/employees',empCtrl.getEmployees)
-app.get('/employees2',empCtrl.getEmployees2)
-app.get('/addresses',empCtrl.getAddress)
+app.get('/skills',empCtrl.getSkills)
 
 app.listen(3000,()=>{
     console.log('App will run on: http://localhost:3000')

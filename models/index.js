@@ -21,8 +21,10 @@ db.sequelize=sequelize;
 
 db.employee=require('./Employee')(sequelize,DataTypes,Model)
 db.employee_address=require('./EmployeeAddress')(sequelize,DataTypes)
+db.skill=require('./Skill')(sequelize,DataTypes,Model)
 
-db.employee.hasMany(db.employee_address,{foreignKey: 'employee_id',as:'addresses'})
-db.employee_address.belongsTo(db.employee,{foreignKey: 'employee_id'})
+//here we give direct table through:employee_skills
+db.employee.belongsToMany(db.skill,{through: 'employee_skills',foreignKey:'skill_id',timestamps: false})
+db.skill.belongsToMany(db.employee,{through: 'employee_skills',foreignKey:'employee_id',timestamps: false})
 
 module.exports=db;
