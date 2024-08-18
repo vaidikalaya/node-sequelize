@@ -1,31 +1,43 @@
+'use strict';
 
-const { Sequelize,DataTypes,Model } = require('sequelize');
+const fs = require('fs');
+const path = require('path');
+const Sequelize = require('sequelize');
+const process = require('process');
+const basename = path.basename(__filename);
+const env = process.env.NODE_ENV || 'development';
+const config = require(__dirname + '/../config/config.json')[env];
+const db = {};
 
-const sequelize = new Sequelize('test_employees', 'root', '', {
-    host: 'localhost',
-    logging:false,
-    dialect: 'mysql'
+let sequelize;
+if (config.use_env_variable) {
+  sequelize = new Sequelize(process.env[config.use_env_variable], config);
+} else {
+  sequelize = new Sequelize(config.database, config.username, config.password, config);
+}
+
+fs
+  .readdirSync(__dirname)
+  .filter(file => {
+    return (
+      file.indexOf('.') !== 0 &&
+      file !== basename &&
+      file.slice(-3) === '.js' &&
+      file.indexOf('.test.js') === -1
+    );
+  })
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  });
+
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
 });
 
-try {
-    sequelize.authenticate();
-    console.log('Connection has been established successfully.');
-}
-catch (error) {
-    console.error('Unable to connect to the database:', error);
-}
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
 
-const db={};
-db.Sequelize=Sequelize;
-db.sequelize=sequelize;
-
-db.employee=require('./Employee')(sequelize,DataTypes,Model)
-db.employee_address=require('./EmployeeAddress')(sequelize,DataTypes)
-db.skill=require('./Skill')(sequelize,DataTypes,Model)
-db.employeeSkill=require('./EmployeeSkill')(sequelize,DataTypes,Model,db.skill,db.employee)
-
-//here we give direct table through:employee_skills
-db.employee.belongsToMany(db.skill,{through: db.employeeSkill,foreignKey:'skill_id',timestamps: false})
-db.skill.belongsToMany(db.employee,{through: db.employeeSkill,foreignKey:'employee_id',timestamps: false})
-
-module.exports=db;
+module.exports = db;
