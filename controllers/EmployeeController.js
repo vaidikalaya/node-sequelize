@@ -1,58 +1,26 @@
-const { QueryTypes } = require('sequelize');
 const db=require('../models')
 const Employee=db.employee;
-const Skill=db.skill;
 
-const getEmployees = async (req,res) => {
-    const resEmp=await Employee.findAll();
-    res.status(200).json(resEmp)
-}
-
-const getEmployeesWithDeleted = async (req,res) => {
-    const resEmp=await Employee.findAll({
-        paranoid: false,
+const getEmployees = async (req, res) => {
+    const resEmp = await Employee.findAll({
+        attributes: {
+            include: [
+                [
+                    db.sequelize.literal(`
+                        (
+                            SELECT COUNT(*) FROM 
+                            employee_addresses 
+                            WHERE employee_addresses.employee_id = employee.id
+                        )
+                    `),
+                    'total_address'
+                ]
+            ]
+        }
     });
-    res.status(200).json(resEmp)
-}
-
-const deleteEmployee = async (req,res) => {
-    const resEmp=await Employee.destroy({
-        where: {
-          id: 2,
-        },
-    });
-    res.status(200).json(resEmp)
-}
-
-const forceDeleteEmployee = async (req,res) => {
-    const resEmp=await Employee.destroy({
-        where: {
-          id: 1,
-        },
-        force: true,
-    });
-    res.status(200).json(resEmp)
-}
-
-const restoreEmployee = async (req,res) => {
-    const resEmp=await Employee.restore({
-        where: {
-          id: 2,
-        },
-    });
-    res.status(200).json(resEmp)
-}
-
-const restoreAllEmployee = async (req,res) => {
-    const resEmp=await Employee.restore();
-    res.status(200).json(resEmp)
+    res.status(200).json(resEmp);
 }
 
 module.exports={
     getEmployees,
-    getEmployeesWithDeleted,
-    deleteEmployee,
-    forceDeleteEmployee,
-    restoreEmployee,
-    restoreAllEmployee
 }
